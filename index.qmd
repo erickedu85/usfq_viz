@@ -20,7 +20,7 @@ cars = data.cars()
 cars.head()
 ```
 
-# Visualización de tipo: Gráfico de disperción
+# Visualización de tipo: Gráfico de dispersión
 
 
 El gráfico de la @fig-miles-weight muestra la correlación entre las milas por galón vs el peso en libras
