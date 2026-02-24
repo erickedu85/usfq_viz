@@ -1,0 +1,40 @@
+---
+title: "Visualización Hola Mundo"
+author: "Erick Cuenca"
+format: html
+---
+
+# Dataset
+
+Vamos a utilizar el dataset de `carros` de vega_dataset <https://vega.github.io/vega-datasets/>
+
+```{python}
+import altair as alt
+from vega_datasets import data
+```
+
+# Autos
+
+```{python}
+cars = data.cars()
+cars.head()
+```
+
+# Visualización de tipo: Gráfico de disperción
+
+
+El gráfico de la @fig-miles-weight muestra la correlación entre las milas por galón vs el peso en libras
+
+```{python}
+#| label: fig-miles-weight
+#| fig-cap: "Correlación de Millas por galón vs peso en libras"
+#| code-fold: false
+alt.Chart(cars, title="Viz 1").mark_point().encode(
+    alt.X('Miles_per_Gallon'),
+    alt.Y('Weight_in_lbs'),
+    tooltip=[
+        'Miles_per_Gallon',
+        'Weight_in_lbs'
+    ]
+).interactive()
+```
