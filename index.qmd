@@ -11,30 +11,53 @@ Vamos a utilizar el dataset de `carros` de vega_dataset <https://vega.github.io/
 ```{python}
 import altair as alt
 from vega_datasets import data
+import pandas as pd
 ```
 
-# Autos
-
+# Carga del dataset
 ```{python}
-cars = data.cars()
-cars.head()
+donations = pd.read_csv("https://raw.githubusercontent.com/erickedu85/dataset/master/donations.csv",parse_dates=['date'])
+donations.head()
 ```
 
-# Visualización de tipo: Gráfico de dispersión
-
-
-El gráfico de la @fig-miles-weight muestra la correlación entre las milas por galón vs el peso en libras
-
 ```{python}
-#| label: fig-miles-weight
-#| fig-cap: "Correlación de Millas por galón vs peso en libras"
-#| code-fold: false
-alt.Chart(cars, title="Viz 1").mark_point().encode(
-    alt.X('Miles_per_Gallon'),
-    alt.Y('Weight_in_lbs'),
-    tooltip=[
-        'Miles_per_Gallon',
-        'Weight_in_lbs'
-    ]
+# print(alt.themes.names())
+alt.themes.enable('dark')
+```
+
+# Gráfico lineal
+```{python}
+alt.Chart(donations).mark_line().encode(
+    alt.X('date'),
+    alt.Y('sum')
 ).interactive()
 ```
+# Gráfico de barras
+```{python}
+list_week_day = ['Mon','Tue','Wed', 'Thu','Fri','Sat','Sun']
+
+top_day = donations.groupby('week_day')['sum'].sum().idxmax()
+
+
+chart = alt.Chart(donations).mark_bar().encode(
+    alt.X('sum(sum)'),
+    alt.Y('week_day',sort=list_week_day),
+    color = alt.condition(
+        alt.datum.week_day == top_day,
+        alt.value('coral'),
+        alt.value('steelblue')
+    )
+)
+
+texto = chart.mark_text(align='left',dx=5).encode(
+    text = alt.Text('sum(sum)', format='$.3s')
+    # text = alt.condition(
+    #     alt.datum.week_day == top_day,
+    #     alt.Text('sum(sum):Q', format='$.3s'),
+    #     alt.Text('sum(sum):Q', format='$.3s')
+    # )
+)
+
+chart + texto
+```
+
