@@ -4,6 +4,55 @@
     "href": "index.html",
     "title": "Visualización Hola Mundo",
     "section": "",
-    "text": "Dataset\nVamos a utilizar el dataset de carros de vega_dataset https://vega.github.io/vega-datasets/\n\n\nCode\nimport altair as alt\nfrom vega_datasets import data\nimport pandas as pd\n\n\n\n\nCarga del dataset\n\n\nCode\ndonations = pd.read_csv(\"https://raw.githubusercontent.com/erickedu85/dataset/master/donations.csv\",parse_dates=['date'])\ndonations.head()\n\n\n\n\n\n\n\n\n\ndate\nsum\nrefund_sum\ndonations\nrefunds\navg\nmax\nytdsum\nytdloss\nweek_day\n\n\n\n\n0\n2020-01-02\n62419.79\n0.0\n3342\n0\n18.677376\n1040.00\n879029.00\n0.0\nThu\n\n\n1\n2020-01-03\n37983.67\n0.0\n1949\n0\n19.488799\n1000.00\n917012.67\n0.0\nFri\n\n\n2\n2020-01-04\n26219.10\n0.0\n1337\n0\n19.610396\n208.00\n943231.77\n0.0\nSat\n\n\n3\n2020-01-05\n33856.07\n0.0\n1289\n0\n26.265376\n5596.86\n977087.84\n0.0\nSun\n\n\n4\n2020-01-06\n26447.11\n0.0\n1347\n0\n19.634083\n699.67\n1003534.95\n0.0\nMon\n\n\n\n\n\n\n\n\n\nCode\n# print(alt.themes.names())\nalt.themes.enable('dark')\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_33088/1193503845.py:2: AltairDeprecationWarning: \nDeprecated since `altair=5.5.0`. Use altair.theme instead.\nMost cases require only the following change:\n\n    # Deprecated\n    alt.themes.enable('quartz')\n\n    # Updated\n    alt.theme.enable('quartz')\n\nIf your code registers a theme, make the following change:\n\n    # Deprecated\n    def custom_theme():\n        return {'height': 400, 'width': 700}\n    alt.themes.register('theme_name', custom_theme)\n    alt.themes.enable('theme_name')\n\n    # Updated\n    @alt.theme.register('theme_name', enable=True)\n    def custom_theme():\n        return alt.theme.ThemeConfig(\n            {'height': 400, 'width': 700}\n        )\n\nSee the updated User Guide for further details:\n    https://altair-viz.github.io/user_guide/api.html#theme\n    https://altair-viz.github.io/user_guide/customization.html#chart-themes\n  alt.themes.enable('dark')\n\n\nThemeRegistry.enable('dark')\n\n\n\n\nGráfico lineal\n\n\nCode\nalt.Chart(donations).mark_line().encode(\n    alt.X('date'),\n    alt.Y('sum')\n).interactive()\n\n\n\n\n\n\n\n\n\n\nGráfico de barras\n\n\nCode\nlist_week_day = ['Mon','Tue','Wed', 'Thu','Fri','Sat','Sun']\n\ntop_day = donations.groupby('week_day')['sum'].sum().idxmax()\n\n\nchart = alt.Chart(donations).mark_bar().encode(\n    alt.X('sum(sum)'),\n    alt.Y('week_day',sort=list_week_day),\n    color = alt.condition(\n        alt.datum.week_day == top_day,\n        alt.value('coral'),\n        alt.value('steelblue')\n    )\n)\n\ntexto = chart.mark_text(align='left',dx=5).encode(\n    text = alt.Text('sum(sum)', format='$.3s')\n    # text = alt.condition(\n    #     alt.datum.week_day == top_day,\n    #     alt.Text('sum(sum):Q', format='$.3s'),\n    #     alt.Text('sum(sum):Q', format='$.3s')\n    # )\n)\n\nchart + texto"
+    "text": "Vamos a utilizar el dataset de carros de vega_dataset https://vega.github.io/vega-datasets/\n\n\nCode\nimport altair as alt\nfrom vega_datasets import data\nimport pandas as pd"
+  },
+  {
+    "objectID": "index.html#tooltip",
+    "href": "index.html#tooltip",
+    "title": "Visualización Hola Mundo",
+    "section": "Tooltip",
+    "text": "Tooltip\n\n\nCode\ncars = data.cars()\ncars['URL'] = \"https://google.com/search?q=\"+cars['Name']\ncars.head()\n\n#paso1\nbrush = alt.selection_interval(resolve='intersect')\n#paso3\ncondition = alt.condition(\n    brush,\n    'Origin',\n    alt.value('lightgray')\n)\n\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.3)\n)\n\nautos = alt.Chart(cars).mark_circle().encode(\n    alt.X(\"Horsepower\"),\n    alt.Y(\"Miles_per_Gallon\"),\n    color = condition,\n    # opacity = opacity_condition,\n    href='URL',\n    tooltip=[\n        alt.Tooltip('Name',title='Nombre: ')\n    ]\n).add_params(brush) #paso2\n\n# autos.save(\"autos.html\")\n\nautos_link = autos.encode(\n    alt.X('Acceleration'),\n    alt.Y('Weight_in_lbs')\n)\n\n\nautos | autos_link\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_9114/1909135793.py:39: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  autos | autos_link"
+  },
+  {
+    "objectID": "index.html#bind-legend",
+    "href": "index.html#bind-legend",
+    "title": "Visualización Hola Mundo",
+    "section": "Bind legend",
+    "text": "Bind legend\n\n\nCode\nclick_legend = alt.selection_point(fields=['Origin'],bind='legend')\npoints_opacity_condition = alt.condition(\n    click_legend,\n    alt.value(1),\n    alt.value(0.3)\n)\n\npoints = alt.Chart(cars).mark_circle().encode(\n    alt.X('Horsepower'),\n    alt.Y('Miles_per_Gallon'),\n    alt.Color('Origin'),\n    opacity = points_opacity_condition\n).add_params(click_legend)\n\npoints"
+  },
+  {
+    "objectID": "index.html#selección-de-2-gráficos-diferentes",
+    "href": "index.html#selección-de-2-gráficos-diferentes",
+    "title": "Visualización Hola Mundo",
+    "section": "Selección de 2 gráficos diferentes",
+    "text": "Selección de 2 gráficos diferentes\n\n\nCode\n# BARRAS\n\nclick = alt.selection_point(fields=['Origin'])\nbar_opacity_condition = alt.condition(\n    click,\n    alt.value(1),\n    alt.value(0.3)\n)\n\nbars = alt.Chart(cars).mark_bar().encode(\n    alt.X('count()'),\n    alt.Y('Origin'),\n    alt.Color('Origin'),\n    opacity = bar_opacity_condition,\n    tooltip=[\n        'count()'\n    ]\n).add_params(click)\n\nbars\n\n#POINTS\n\npoints_opacity_condition = alt.condition(\n    click,\n    alt.value(1),\n    alt.value(0.3)\n)\n\npoints = alt.Chart(cars).mark_circle().encode(\n    alt.X('Horsepower'),\n    alt.Y('Miles_per_Gallon'),\n    alt.Color('Origin'),\n    opacity = points_opacity_condition\n)\n\npoints & bars"
+  },
+  {
+    "objectID": "index.html#transform-filter",
+    "href": "index.html#transform-filter",
+    "title": "Visualización Hola Mundo",
+    "section": "Transform filter",
+    "text": "Transform filter\n\n\nCode\nbrush = alt.selection_interval()\npoints_opacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.3)\n)\n\npoints = alt.Chart(cars).mark_circle().encode(\n    alt.X('Horsepower'),\n    alt.Y('Miles_per_Gallon'),\n    alt.Color('Origin'),\n    opacity = points_opacity_condition\n).add_params(brush)\n\npoints\n\nbar_chart_max = cars.groupby('Origin').size().max()\nbars = alt.Chart(cars).mark_bar().encode(\n    alt.X('count()', scale=alt.Scale(domain=[0,bar_chart_max])),\n    alt.Y('Origin'),\n    alt.Color('Origin'),\n    tooltip=[\n        'count()'\n    ]\n).transform_filter(brush)\n\npoints & bars\n\n\n\n\n\n\n\n\n\nLeyenda en varios gráficos\n\n\nCode\nclick_legend = alt.selection_point(fields=['Origin'],bind='legend')\n\npoints_opacity_condition = alt.condition(\n    click_legend,\n    alt.value(1),\n    alt.value(0.3)\n)\n\npoints = alt.Chart(cars).mark_circle().encode(\n    alt.X('Horsepower'),\n    alt.Y('Miles_per_Gallon'),\n    alt.Color('Origin'),\n    opacity = points_opacity_condition\n).add_params(click_legend)\n\nbars_opacity_condition = alt.condition(\n    click_legend,\n    alt.value(1),\n    alt.value(0.3)\n)\n\nbars = alt.Chart(cars).mark_bar().encode(\n    alt.X('count()'),\n    alt.Y('Origin'),\n    alt.Color('Origin'),\n    opacity = bars_opacity_condition,\n    tooltip=[\n        'count()'\n    ]\n)\n\npoints & bars"
+  },
+  {
+    "objectID": "index.html#slider",
+    "href": "index.html#slider",
+    "title": "Visualización Hola Mundo",
+    "section": "Slider",
+    "text": "Slider\n\n\nCode\nworldwide_gross_max = movies['Worldwide_Gross'].max()\n\nslider_gross = alt.binding_range(\n    name='Worldwide Gross: ',\n    min=0,\n    max=worldwide_gross_max,\n    step=10e6\n)\n\nselect_worldwige_gross = alt.selection_point(\n    fields = ['Worldwide_Gross'],\n    bind=slider_gross\n)\n\nopacity_condition = alt.condition(\n    # select_tomatoes_rating,\n    alt.datum.Worldwide_Gross &gt; select_worldwige_gross.Worldwide_Gross,\n    alt.value(1),\n    alt.value(0.1)\n)\n\npoints = alt.Chart(movies).mark_circle().encode(\n    alt.X('Rotten_Tomatoes_Rating'),\n    alt.Y('IMDB_Rating'),\n    alt.Color('Major_Genre'),\n    opacity=opacity_condition,\n    tooltip=['Title','Rotten_Tomatoes_Rating','IMDB_Rating','Major_Genre']\n).add_params(select_worldwige_gross).interactive()\n\npoints"
+  },
+  {
+    "objectID": "index.html#overview-details",
+    "href": "index.html#overview-details",
+    "title": "Visualización Hola Mundo",
+    "section": "Overview + details",
+    "text": "Overview + details\n\n\nCode\nbrush = alt.selection_interval()\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.2)\n)\n\nbars_slider = alt.Chart(movies).mark_bar().encode(\n    alt.X('Release_Date'),\n    alt.Y('count()'),\n    opacity = opacity_condition\n).properties(\n    height = 50\n).add_params(brush)\n\n\npoints = alt.Chart(movies).mark_circle().encode(\n    alt.X('Rotten_Tomatoes_Rating'),\n    alt.Y('IMDB_Rating'),\n    alt.Color('Major_Genre'),\n    opacity=opacity_condition,\n    tooltip=['Title','Rotten_Tomatoes_Rating','IMDB_Rating','Major_Genre','Release_Date']\n).add_params(brush)\n\n\npoints & bars_slider\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_9114/4091028901.py:26: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  points & bars_slider"
+  },
+  {
+    "objectID": "index.html#minimap---release-date",
+    "href": "index.html#minimap---release-date",
+    "title": "Visualización Hola Mundo",
+    "section": "Minimap - Release Date",
+    "text": "Minimap - Release Date\n\n\nCode\nselect_date = alt.selection_interval()\n\nbase = alt.Chart(movies).mark_line(point=True).encode(\n    alt.X('Release_Date'),\n    alt.Y('mean(Worldwide_Gross)')\n).properties(\n    width=500\n)\n\n# base\n\n\n##details\nupper_chart = base.encode(\n    alt.X('Release_Date', scale=alt.Scale(domain=select_date))\n).properties(height=180)\n\nlower_chart = base.add_params(select_date).properties(height=50)\n\nupper_chart & lower_chart"
   }
 ]
