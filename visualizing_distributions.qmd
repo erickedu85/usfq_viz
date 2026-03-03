@@ -1,0 +1,155 @@
+---
+title: "Visualizando Distribuciones"
+---
+
+# Librerías
+
+```{python}
+import altair as alt
+import pandas as pd
+from vega_datasets import data
+```
+
+# Dataset
+```{python}
+movies = pd.read_csv("https://raw.githubusercontent.com/erickedu85/dataset/master/movies.csv")
+movies.head()
+movies.info()
+```
+
+# Gráfico de puntos
+```{python}
+alt.Chart(movies).mark_point().encode(
+    alt.X('runtime')
+)
+
+```
+
+## Rugplot
+```{python}
+alt.Chart(movies).mark_tick().encode(
+    alt.X('runtime')
+)
+```
+
+## Histograma
+```{python}
+alt.Chart(movies).mark_bar().encode(
+    alt.X('runtime', bin=alt.Bin(step=10)),
+    alt.Y('count()')
+)
+```
+
+## Gráfico de densidad o KDE
+
+```{python}
+alt.Chart(movies).transform_density(
+    'runtime',
+    as_ = ['runtime','density']
+).mark_area().encode(
+    alt.X('runtime:Q'),
+    alt.Y('density:Q')
+)
+```
+
+```{python}
+alt.Chart(movies).transform_density(
+    'runtime',
+    groupby=['genre'],
+    as_ = ['runtime','density'],
+    steps=100
+).mark_area(opacity=0.5).encode(
+    alt.X('runtime:Q'),
+    alt.Y('density:Q', stack=None),
+    alt.Color('genre')
+)
+```
+
+```{python}
+density = alt.Chart(movies[:10]).transform_density(
+    'runtime',
+    as_ = ['runtime','density']
+).mark_area(opacity=0.5).encode(
+    alt.X('runtime:Q'),
+    alt.Y('density:Q', stack=None)
+)
+
+
+tick = alt.Chart(movies[:10]).mark_tick(
+    color='black',
+    yOffset=140
+).encode(
+    alt.X('runtime')
+)
+
+density + tick
+
+```
+
+# Dataset movies from Vega
+
+```{python}
+movies_extended = data.movies().dropna(subset=['Major_Genre'])
+movies_extended.head()
+```
+
+```{python}
+alt.Chart(movies_extended).mark_bar().encode(
+    alt.X('Worldwide_Gross',bin=alt.Bin(maxbins=100)),
+    alt.Y('count()'),
+    alt.Color('Major_Genre')
+)
+```
+
+```{python}
+alt.Chart(movies_extended).transform_density(
+    'Worldwide_Gross',
+    as_=['Worldwide_Gross','density'],
+    groupby=['Major_Genre']
+).mark_area(opacity=0.5).encode(
+    alt.X('Worldwide_Gross'),
+    alt.Y('density:Q', stack=None),
+    alt.Color('Major_Genre')
+).interactive()
+```
+
+```{python}
+alt.Chart(movies_extended).mark_bar().encode(
+    alt.X('mean(Worldwide_Gross)'),
+    alt.Y('Major_Genre')
+)
+```
+
+```{python}
+alt.Chart(movies_extended).mark_tick().encode(
+    alt.X('Worldwide_Gross'),
+    alt.Y('Major_Genre'),
+    tooltip=['Title:N']
+)
+```
+
+```{python}
+alt.Chart(movies_extended).mark_rect().encode(
+    alt.X('Worldwide_Gross', bin=alt.Bin(step=100e6)),
+    alt.Y('Major_Genre'),
+    alt.Color('count()'),
+    tooltip=['count()']
+).interactive()
+```
+
+## Boxplot - caja y bigotes
+
+```{python}
+bar = alt.Chart(movies_extended).mark_bar().encode(
+    alt.X('mean(Worldwide_Gross)'),
+    alt.Y('Major_Genre')
+)
+
+blox = alt.Chart(movies_extended).mark_boxplot().encode(
+    alt.X('Worldwide_Gross'),
+    alt.Y('Major_Genre')
+)
+
+blox | bar
+
+```

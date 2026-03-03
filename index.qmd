@@ -390,3 +390,155 @@ lower_chart = base.add_params(select_date).properties(height=50)
 upper_chart & lower_chart
 
 ```
+
+## Movies from vega
+
+```{python}
+movies_cleaned = data.movies()
+movies_cleaned.head()
+movies_cleaned.info()
+```
+
+```{python}
+movies_cleaned['Release_Date'] = pd.to_datetime(movies_cleaned['Release_Date'])
+movies_cleaned.info()
+```
+
+## Line chart
+```{python}
+alt.Chart(movies_cleaned).mark_line().encode(
+    alt.X('year(Release_Date)'),
+    alt.Y('sum(US_Gross)')
+).interactive()
+```
+
+## Trail
+```{python}
+alt.Chart(movies_cleaned).mark_trail().encode(
+    alt.X('year(Release_Date)'),
+    alt.Y('sum(US_Gross)'),
+    alt.Size('sum(Production_Budget)')
+).interactive()
+```
+
+## Suma acumulada
+```{python}
+alt.Chart(movies_cleaned).mark_line().transform_window(
+    sort=[{'field':'Release_Date'}],
+    cumulative_us_gross = 'sum(US_Gross)'
+).encode(
+    alt.X('Release_Date'),
+    alt.Y('cumulative_us_gross:Q')
+)
+```
+
+## Area 
+```{python}
+alt.Chart(movies_cleaned).mark_area(
+    interpolate='basis',
+    color='lightblue',
+    line=True
+).encode(
+    alt.X('year(Release_Date)'),
+    alt.Y('mean(US_Gross)')
+).properties(
+    width=600
+)
+```
+
+```{python}
+alt.Chart(movies_cleaned).mark_area(
+    interpolate='basis',
+    color=alt.Gradient(
+      gradient='linear',
+      stops=[
+        alt.GradientStop(color='white',offset=0),
+        alt.GradientStop(color='darkgreen',offset=1)
+      ],
+      x1=1,
+      x2=1,
+      y1=1,
+      y2=0
+    ),
+    line=True
+).encode(
+    alt.X('year(Release_Date)'),
+    alt.Y('mean(US_Gross)')
+).properties(
+    width=600
+)
+```
+
+## Highlight
+```{python}
+hightlight = alt.selection_point(
+    on='mouseover', fields=['Major_Genre'], clear='mouseout'
+)
+
+alt.Chart(movies_cleaned).mark_area(
+    interpolate='basis',
+    line=True
+    # point=alt.OverlayMarkDef(filled=False, fill='white')
+).encode(
+    alt.X('year(Release_Date)'),
+    alt.Y('mean(US_Gross)'),
+    alt.Color('Major_Genre'),
+    opacity = alt.condition(hightlight,alt.value(1),alt.value(0.1))
+).add_params(hightlight).properties(width=600).interactive()
+```
+
+## Small multiples
+```{python}
+hightlight = alt.selection_point(
+    on='mouseover', fields=['Major_Genre'], clear='mouseout'
+)
+
+alt.Chart(movies_cleaned).mark_area(
+    interpolate='basis',
+    line=True
+    # point=alt.OverlayMarkDef(filled=False, fill='white')
+).encode(
+    alt.X('year(Release_Date)'),
+    alt.Y('mean(US_Gross)', title=None),
+    alt.Color('Major_Genre'),
+    row=alt.Row('Major_Genre'),
+    opacity = alt.condition(hightlight,alt.value(1),alt.value(0.1)),
+    tooltip=[
+        'Major_Genre'
+    ]
+).add_params(hightlight).properties(
+    width=600,
+    height=30
+).interactive()
+```
+
+## Streamgraph
+
+```{python}
+hightlight = alt.selection_point(
+    on='mouseover', fields=['Major_Genre'], clear='mouseout'
+)
+
+alt.Chart(movies_cleaned).mark_area(
+    interpolate='basis',
+    line=True
+    # point=alt.OverlayMarkDef(filled=False, fill='white')
+).encode(
+    alt.X('year(Release_Date)'),
+    alt.Y('mean(US_Gross)',stack='center', axis=None),
+    alt.Color('Major_Genre'),
+    opacity = alt.condition(hightlight,alt.value(1),alt.value(0.1))
+).add_params(hightlight).properties(width=600).interactive()
+```
+
+## Temporal heatmap
+
+```{python}
+alt.Chart(movies_cleaned).mark_rect().encode(
+    alt.X('date(Release_Date):O'),
+    alt.Y('month(Release_Date):O'),
+    alt.Color('sum(US_Gross)'),
+    tooltip=['sum(US_Gross)']
+)
+```
+

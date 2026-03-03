@@ -11,7 +11,7 @@
     "href": "index.html#tooltip",
     "title": "Visualización Hola Mundo",
     "section": "Tooltip",
-    "text": "Tooltip\n\n\nCode\ncars = data.cars()\ncars['URL'] = \"https://google.com/search?q=\"+cars['Name']\ncars.head()\n\n#paso1\nbrush = alt.selection_interval(resolve='intersect')\n#paso3\ncondition = alt.condition(\n    brush,\n    'Origin',\n    alt.value('lightgray')\n)\n\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.3)\n)\n\nautos = alt.Chart(cars).mark_circle().encode(\n    alt.X(\"Horsepower\"),\n    alt.Y(\"Miles_per_Gallon\"),\n    color = condition,\n    # opacity = opacity_condition,\n    href='URL',\n    tooltip=[\n        alt.Tooltip('Name',title='Nombre: ')\n    ]\n).add_params(brush) #paso2\n\n# autos.save(\"autos.html\")\n\nautos_link = autos.encode(\n    alt.X('Acceleration'),\n    alt.Y('Weight_in_lbs')\n)\n\n\nautos | autos_link\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_9114/1909135793.py:39: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  autos | autos_link"
+    "text": "Tooltip\n\n\nCode\ncars = data.cars()\ncars['URL'] = \"https://google.com/search?q=\"+cars['Name']\ncars.head()\n\n#paso1\nbrush = alt.selection_interval(resolve='intersect')\n#paso3\ncondition = alt.condition(\n    brush,\n    'Origin',\n    alt.value('lightgray')\n)\n\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.3)\n)\n\nautos = alt.Chart(cars).mark_circle().encode(\n    alt.X(\"Horsepower\"),\n    alt.Y(\"Miles_per_Gallon\"),\n    color = condition,\n    # opacity = opacity_condition,\n    href='URL',\n    tooltip=[\n        alt.Tooltip('Name',title='Nombre: ')\n    ]\n).add_params(brush) #paso2\n\n# autos.save(\"autos.html\")\n\nautos_link = autos.encode(\n    alt.X('Acceleration'),\n    alt.Y('Weight_in_lbs')\n)\n\n\nautos | autos_link\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_57835/1909135793.py:39: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  autos | autos_link"
   },
   {
     "objectID": "index.html#bind-legend",
@@ -46,7 +46,7 @@
     "href": "index.html#overview-details",
     "title": "Visualización Hola Mundo",
     "section": "Overview + details",
-    "text": "Overview + details\n\n\nCode\nbrush = alt.selection_interval()\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.2)\n)\n\nbars_slider = alt.Chart(movies).mark_bar().encode(\n    alt.X('Release_Date'),\n    alt.Y('count()'),\n    opacity = opacity_condition\n).properties(\n    height = 50\n).add_params(brush)\n\n\npoints = alt.Chart(movies).mark_circle().encode(\n    alt.X('Rotten_Tomatoes_Rating'),\n    alt.Y('IMDB_Rating'),\n    alt.Color('Major_Genre'),\n    opacity=opacity_condition,\n    tooltip=['Title','Rotten_Tomatoes_Rating','IMDB_Rating','Major_Genre','Release_Date']\n).add_params(brush)\n\n\npoints & bars_slider\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_9114/4091028901.py:26: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  points & bars_slider"
+    "text": "Overview + details\n\n\nCode\nbrush = alt.selection_interval()\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.2)\n)\n\nbars_slider = alt.Chart(movies).mark_bar().encode(\n    alt.X('Release_Date'),\n    alt.Y('count()'),\n    opacity = opacity_condition\n).properties(\n    height = 50\n).add_params(brush)\n\n\npoints = alt.Chart(movies).mark_circle().encode(\n    alt.X('Rotten_Tomatoes_Rating'),\n    alt.Y('IMDB_Rating'),\n    alt.Color('Major_Genre'),\n    opacity=opacity_condition,\n    tooltip=['Title','Rotten_Tomatoes_Rating','IMDB_Rating','Major_Genre','Release_Date']\n).add_params(brush)\n\n\npoints & bars_slider\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_57835/4091028901.py:26: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  points & bars_slider"
   },
   {
     "objectID": "index.html#minimap---release-date",
@@ -54,5 +54,103 @@
     "title": "Visualización Hola Mundo",
     "section": "Minimap - Release Date",
     "text": "Minimap - Release Date\n\n\nCode\nselect_date = alt.selection_interval()\n\nbase = alt.Chart(movies).mark_line(point=True).encode(\n    alt.X('Release_Date'),\n    alt.Y('mean(Worldwide_Gross)')\n).properties(\n    width=500\n)\n\n# base\n\n\n##details\nupper_chart = base.encode(\n    alt.X('Release_Date', scale=alt.Scale(domain=select_date))\n).properties(height=180)\n\nlower_chart = base.add_params(select_date).properties(height=50)\n\nupper_chart & lower_chart"
+  },
+  {
+    "objectID": "index.html#movies-from-vega",
+    "href": "index.html#movies-from-vega",
+    "title": "Visualización Hola Mundo",
+    "section": "Movies from vega",
+    "text": "Movies from vega\n\n\nCode\nmovies_cleaned = data.movies()\nmovies_cleaned.head()\nmovies_cleaned.info()\n\n\n&lt;class 'pandas.DataFrame'&gt;\nRangeIndex: 3201 entries, 0 to 3200\nData columns (total 16 columns):\n #   Column                  Non-Null Count  Dtype  \n---  ------                  --------------  -----  \n 0   Title                   3200 non-null   object \n 1   US_Gross                3194 non-null   float64\n 2   Worldwide_Gross         3194 non-null   float64\n 3   US_DVD_Sales            564 non-null    float64\n 4   Production_Budget       3200 non-null   float64\n 5   Release_Date            3201 non-null   str    \n 6   MPAA_Rating             2596 non-null   str    \n 7   Running_Time_min        1209 non-null   float64\n 8   Distributor             2969 non-null   str    \n 9   Source                  2836 non-null   str    \n 10  Major_Genre             2926 non-null   str    \n 11  Creative_Type           2755 non-null   str    \n 12  Director                1870 non-null   str    \n 13  Rotten_Tomatoes_Rating  2321 non-null   float64\n 14  IMDB_Rating             2988 non-null   float64\n 15  IMDB_Votes              2988 non-null   float64\ndtypes: float64(8), object(1), str(7)\nmemory usage: 400.3+ KB\n\n\n\n\nCode\nmovies_cleaned['Release_Date'] = pd.to_datetime(movies_cleaned['Release_Date'])\nmovies_cleaned.info()\n\n\n&lt;class 'pandas.DataFrame'&gt;\nRangeIndex: 3201 entries, 0 to 3200\nData columns (total 16 columns):\n #   Column                  Non-Null Count  Dtype         \n---  ------                  --------------  -----         \n 0   Title                   3200 non-null   object        \n 1   US_Gross                3194 non-null   float64       \n 2   Worldwide_Gross         3194 non-null   float64       \n 3   US_DVD_Sales            564 non-null    float64       \n 4   Production_Budget       3200 non-null   float64       \n 5   Release_Date            3201 non-null   datetime64[us]\n 6   MPAA_Rating             2596 non-null   str           \n 7   Running_Time_min        1209 non-null   float64       \n 8   Distributor             2969 non-null   str           \n 9   Source                  2836 non-null   str           \n 10  Major_Genre             2926 non-null   str           \n 11  Creative_Type           2755 non-null   str           \n 12  Director                1870 non-null   str           \n 13  Rotten_Tomatoes_Rating  2321 non-null   float64       \n 14  IMDB_Rating             2988 non-null   float64       \n 15  IMDB_Votes              2988 non-null   float64       \ndtypes: datetime64[us](1), float64(8), object(1), str(6)\nmemory usage: 400.3+ KB"
+  },
+  {
+    "objectID": "index.html#line-chart",
+    "href": "index.html#line-chart",
+    "title": "Visualización Hola Mundo",
+    "section": "Line chart",
+    "text": "Line chart\n\n\nCode\nalt.Chart(movies_cleaned).mark_line().encode(\n    alt.X('year(Release_Date)'),\n    alt.Y('sum(US_Gross)')\n).interactive()"
+  },
+  {
+    "objectID": "index.html#trail",
+    "href": "index.html#trail",
+    "title": "Visualización Hola Mundo",
+    "section": "Trail",
+    "text": "Trail\n\n\nCode\nalt.Chart(movies_cleaned).mark_trail().encode(\n    alt.X('year(Release_Date)'),\n    alt.Y('sum(US_Gross)'),\n    alt.Size('sum(Production_Budget)')\n).interactive()"
+  },
+  {
+    "objectID": "index.html#suma-acumulada",
+    "href": "index.html#suma-acumulada",
+    "title": "Visualización Hola Mundo",
+    "section": "Suma acumulada",
+    "text": "Suma acumulada\n\n\nCode\nalt.Chart(movies_cleaned).mark_line().transform_window(\n    sort=[{'field':'Release_Date'}],\n    cumulative_us_gross = 'sum(US_Gross)'\n).encode(\n    alt.X('Release_Date'),\n    alt.Y('cumulative_us_gross:Q')\n)"
+  },
+  {
+    "objectID": "index.html#area",
+    "href": "index.html#area",
+    "title": "Visualización Hola Mundo",
+    "section": "Area",
+    "text": "Area\n\n\nCode\nalt.Chart(movies_cleaned).mark_area(\n    interpolate='basis',\n    color='lightblue',\n    line=True\n).encode(\n    alt.X('year(Release_Date)'),\n    alt.Y('mean(US_Gross)')\n).properties(\n    width=600\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_cleaned).mark_area(\n    interpolate='basis',\n    color=alt.Gradient(\n      gradient='linear',\n      stops=[\n        alt.GradientStop(color='white',offset=0),\n        alt.GradientStop(color='darkgreen',offset=1)\n      ],\n      x1=1,\n      x2=1,\n      y1=1,\n      y2=0\n    ),\n    line=True\n).encode(\n    alt.X('year(Release_Date)'),\n    alt.Y('mean(US_Gross)')\n).properties(\n    width=600\n)"
+  },
+  {
+    "objectID": "index.html#highlight",
+    "href": "index.html#highlight",
+    "title": "Visualización Hola Mundo",
+    "section": "Highlight",
+    "text": "Highlight\n\n\nCode\nhightlight = alt.selection_point(\n    on='mouseover', fields=['Major_Genre'], clear='mouseout'\n)\n\nalt.Chart(movies_cleaned).mark_area(\n    interpolate='basis',\n    line=True\n    # point=alt.OverlayMarkDef(filled=False, fill='white')\n).encode(\n    alt.X('year(Release_Date)'),\n    alt.Y('mean(US_Gross)'),\n    alt.Color('Major_Genre'),\n    opacity = alt.condition(hightlight,alt.value(1),alt.value(0.1))\n).add_params(hightlight).properties(width=600).interactive()"
+  },
+  {
+    "objectID": "index.html#small-multiples",
+    "href": "index.html#small-multiples",
+    "title": "Visualización Hola Mundo",
+    "section": "Small multiples",
+    "text": "Small multiples\n\n\nCode\nhightlight = alt.selection_point(\n    on='mouseover', fields=['Major_Genre'], clear='mouseout'\n)\n\nalt.Chart(movies_cleaned).mark_area(\n    interpolate='basis',\n    line=True\n    # point=alt.OverlayMarkDef(filled=False, fill='white')\n).encode(\n    alt.X('year(Release_Date)'),\n    alt.Y('mean(US_Gross)', title=None),\n    alt.Color('Major_Genre'),\n    row=alt.Row('Major_Genre'),\n    opacity = alt.condition(hightlight,alt.value(1),alt.value(0.1)),\n    tooltip=[\n        'Major_Genre'\n    ]\n).add_params(hightlight).properties(\n    width=600,\n    height=30\n).interactive()"
+  },
+  {
+    "objectID": "index.html#streamgraph",
+    "href": "index.html#streamgraph",
+    "title": "Visualización Hola Mundo",
+    "section": "Streamgraph",
+    "text": "Streamgraph\n\n\nCode\nhightlight = alt.selection_point(\n    on='mouseover', fields=['Major_Genre'], clear='mouseout'\n)\n\nalt.Chart(movies_cleaned).mark_area(\n    interpolate='basis',\n    line=True\n    # point=alt.OverlayMarkDef(filled=False, fill='white')\n).encode(\n    alt.X('year(Release_Date)'),\n    alt.Y('mean(US_Gross)',stack='center', axis=None),\n    alt.Color('Major_Genre'),\n    opacity = alt.condition(hightlight,alt.value(1),alt.value(0.1))\n).add_params(hightlight).properties(width=600).interactive()"
+  },
+  {
+    "objectID": "index.html#temporal-heatmap",
+    "href": "index.html#temporal-heatmap",
+    "title": "Visualización Hola Mundo",
+    "section": "Temporal heatmap",
+    "text": "Temporal heatmap\n\n\nCode\nalt.Chart(movies_cleaned).mark_rect().encode(\n    alt.X('date(Release_Date):O'),\n    alt.Y('month(Release_Date):O'),\n    alt.Color('sum(US_Gross)'),\n    tooltip=['sum(US_Gross)']\n)"
+  },
+  {
+    "objectID": "visualizing_distributions.html",
+    "href": "visualizing_distributions.html",
+    "title": "Visualizando Distribuciones",
+    "section": "",
+    "text": "Code\nimport altair as alt\nimport pandas as pd\nfrom vega_datasets import data"
+  },
+  {
+    "objectID": "visualizing_distributions.html#rugplot",
+    "href": "visualizing_distributions.html#rugplot",
+    "title": "Visualizando Distribuciones",
+    "section": "Rugplot",
+    "text": "Rugplot\n\n\nCode\nalt.Chart(movies).mark_tick().encode(\n    alt.X('runtime')\n)"
+  },
+  {
+    "objectID": "visualizing_distributions.html#histograma",
+    "href": "visualizing_distributions.html#histograma",
+    "title": "Visualizando Distribuciones",
+    "section": "Histograma",
+    "text": "Histograma\n\n\nCode\nalt.Chart(movies).mark_bar().encode(\n    alt.X('runtime', bin=alt.Bin(step=10)),\n    alt.Y('count()')\n)"
+  },
+  {
+    "objectID": "visualizing_distributions.html#gráfico-de-densidad-o-kde",
+    "href": "visualizing_distributions.html#gráfico-de-densidad-o-kde",
+    "title": "Visualizando Distribuciones",
+    "section": "Gráfico de densidad o KDE",
+    "text": "Gráfico de densidad o KDE\n\n\nCode\nalt.Chart(movies).transform_density(\n    'runtime',\n    as_ = ['runtime','density']\n).mark_area().encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q')\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies).transform_density(\n    'runtime',\n    groupby=['genre'],\n    as_ = ['runtime','density'],\n    steps=100\n).mark_area(opacity=0.5).encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q', stack=None),\n    alt.Color('genre')\n)\n\n\n\n\n\n\n\n\n\n\nCode\ndensity = alt.Chart(movies[:10]).transform_density(\n    'runtime',\n    as_ = ['runtime','density']\n).mark_area(opacity=0.5).encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q', stack=None)\n)\n\n\ntick = alt.Chart(movies[:10]).mark_tick(\n    color='black',\n    yOffset=140\n).encode(\n    alt.X('runtime')\n)\n\ndensity + tick"
+  },
+  {
+    "objectID": "visualizing_distributions.html#boxplot---caja-y-bigotes",
+    "href": "visualizing_distributions.html#boxplot---caja-y-bigotes",
+    "title": "Visualizando Distribuciones",
+    "section": "Boxplot - caja y bigotes",
+    "text": "Boxplot - caja y bigotes\n\n\nCode\nbar = alt.Chart(movies_extended).mark_bar().encode(\n    alt.X('mean(Worldwide_Gross)'),\n    alt.Y('Major_Genre')\n)\n\nblox = alt.Chart(movies_extended).mark_boxplot().encode(\n    alt.X('Worldwide_Gross'),\n    alt.Y('Major_Genre')\n)\n\nblox | bar"
   }
 ]
