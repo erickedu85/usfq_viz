@@ -1,0 +1,148 @@
+---
+title: "Exploratory Analysis Data"
+---
+
+```{python}
+import pandas as pd
+import altair as alt
+from vega_datasets import data
+```
+
+```{python}
+movies_extended = data.movies()
+movies_extended.info()
+```
+
+# Visualizar valores faltantes
+
+```{python}
+nan_percent = movies_extended.isna().mean()*100
+nan_percent_sorted = nan_percent.sort_values(ascending=False).round(2)
+nan_percent_sorted
+```
+
+```{python}
+movies_nans = movies_extended.isna().reset_index().melt(id_vars='index',var_name='column',value_name='NaN')
+movies_nans
+```
+
+```{python}
+alt.data_transformers.disable_max_rows()
+```
+
+```{python}
+alt.Chart(movies_nans).mark_rect().encode(
+    alt.X('index:O'),
+    alt.Y('column'),
+    alt.Color('NaN')
+).properties(
+    width=1000
+)
+```
+
+```{python}
+threshold_nan = 70
+
+cols_to_drop = nan_percent[nan_percent>threshold_nan].index
+
+movies_cleaned = movies_extended.drop(columns=cols_to_drop)
+movies_cleaned.info()
+
+```
+
+```{python}
+movies_cleaned.describe()
+```
+
+## Distribución de todas las columnas númericas
+
+```{python}
+numerical_columns = movies_cleaned.select_dtypes('number').columns.tolist()
+#[ 'US_Gross', 'Worldwide_Gross', 'Production_Budget', 'Running_Time_min','Rotten_Tomatoes_Rating','IMDB_Rating','IMDB_Votes']
+
+alt.Chart(movies_cleaned).mark_bar().encode(
+    alt.X(alt.repeat(),type='quantitative',bin=alt.Bin(maxbins=30)),
+    alt.Y('count()')
+).properties(
+    width=150,
+    height=150
+).repeat(
+    numerical_columns,
+    columns=4
+)
+```
+
+```{python}
+
+numerical_filtered = ['IMDB_Rating', 'Rotten_Tomatoes_Rating', 'US_Gross', 'Production_Budget']
+
+alt.Chart(movies_cleaned).mark_point().encode(
+    alt.X(alt.repeat('column'), type='quantitative'),
+    alt.Y(alt.repeat('row'), type='quantitative')
+).properties(
+    width=100,
+    height=100
+).repeat(
+    column=numerical_filtered,
+    row=numerical_filtered
+)
+
+```
+
+```{python}
+alt.Chart(movies_cleaned).mark_rect().encode(
+    alt.X(alt.repeat('column'), type='quantitative', bin=alt.Bin(maxbins=30)),
+    alt.Y(alt.repeat('row'), type='quantitative', bin=alt.Bin(maxbins=30)),
+    alt.Color('count()')
+).properties(
+    width=100,
+    height=100
+).repeat(
+    column=numerical_filtered,
+    row=numerical_filtered
+).resolve_scale(
+    color='independent'
+)
+```
+
+## Correlación de Pearson
+
+```{python}
+corr_matrix = movies_cleaned[numerical_columns].corr(method='pearson')
+corr_matrix
+
+```
+
+```{python}
+corr_df = corr_matrix.reset_index().melt(id_vars='index')
+corr_df.columns = ['Variable1', 'Variable2', 'Correlacion']
+corr_df
+```
+
+```{python}
+
+corr_df = corr_df[corr_df['Variable1'] <= corr_df['Variable2']]
+
+heatmap_corr = alt.Chart(corr_df).mark_rect().encode(
+    alt.X('Variable1'),
+    alt.Y('Variable2'),
+    alt.Color('Correlacion', scale=alt.Scale(domain=[-1,1],scheme='redblue'))
+).properties(
+    width=300,
+    height=300
+)
+
+text_corr = heatmap_corr.mark_text().encode(
+    alt.Text('Correlacion', format='.2f'),
+    color=alt.condition(
+        'abs(datum.Correlacion) > 0.5',
+        alt.value('white'),
+        alt.value('black')
+    )
+)
+
+(heatmap_corr + text_corr).configure_view(
+    strokeWidth=0
+)
+
+```

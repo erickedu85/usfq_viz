@@ -147,9 +147,97 @@ bar = alt.Chart(movies_extended).mark_bar().encode(
 
 blox = alt.Chart(movies_extended).mark_boxplot().encode(
     alt.X('Worldwide_Gross'),
-    alt.Y('Major_Genre')
+    alt.Y('Major_Genre'),
+    alt.Size('count()')
 )
 
 blox | bar
 
+```
+
+
+# Análisis Bivariado: Cuantitativo - Cuantitativo
+
+```{python}
+alt.Chart(movies_extended).mark_point().encode(
+    alt.X('IMDB_Rating'),
+    alt.Y('Rotten_Tomatoes_Rating')
+)
+```
+
+## Heatmap
+```{python}
+alt.Chart(movies_extended).mark_rect().encode(
+    alt.X('IMDB_Rating', bin=alt.Bin(maxbins=60)),
+    alt.Y('Rotten_Tomatoes_Rating', bin=alt.Bin(maxbins=60)),
+    alt.Color('count()')
+)
+```
+
+# Análisis Bivariado: Categórico - Categórico
+
+```{python}
+movies_extended = movies_extended[movies_extended['MPAA_Rating'].isin(['G','PG','PG-13','R'])]
+
+alt.Chart(movies_extended).mark_bar().encode(
+    alt.X('count()', stack='normalize'),
+    alt.Y("Major_Genre", sort='x'),
+    alt.Color('MPAA_Rating')
+)
+```
+
+## Facetas
+```{python}
+
+alt.Chart(movies_extended).mark_bar().encode(
+    alt.X('count()'),
+    alt.Y('MPAA_Rating'),
+    alt.Color('MPAA_Rating'),
+    tooltip=[
+        'count()'
+    ]
+).properties(
+    width=90,
+    height=70
+).facet(
+    'Major_Genre',
+    columns=4,
+)
+```
+
+```{python}
+
+alt.Chart(movies_extended).mark_bar().encode(
+    alt.X('count()'),
+    alt.Y('Major_Genre'),
+    alt.Color('Major_Genre'),
+    tooltip=[
+        'count()'
+    ]
+).properties(
+    width=100,
+    height=130
+).facet(
+    'MPAA_Rating',
+    columns=4,
+)
+```
+
+```{python}
+alt.Chart(movies_extended).mark_rect().encode(
+    alt.X('MPAA_Rating'),
+    alt.Y('Major_Genre', sort='color'),
+    alt.Color('count()'),
+    tooltip=['count()']
+)
+```
+
+```{python}
+alt.Chart(movies_extended).mark_circle().encode(
+    alt.X('MPAA_Rating'),
+    alt.Y('Major_Genre', sort='color'),
+    alt.Color('count()'),
+    alt.Size('count()'),
+    tooltip=['count()']
+)
 ```
