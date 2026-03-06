@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Analysis Data"
+title: "Exploratory Data Analysis"
 ---
 
 ```{python}
@@ -145,4 +145,61 @@ text_corr = heatmap_corr.mark_text().encode(
     strokeWidth=0
 )
 
+```
+
+## Variables categóricas
+
+```{python}
+movies_cleaned.describe(exclude='number')
+```
+
+```{python}
+alt.Chart(movies_cleaned).mark_bar().encode(
+    alt.X('count()'),
+    alt.Y(alt.repeat(), type='nominal',sort='-x')
+).properties(
+    width=150,
+    height=150
+).repeat(
+    ['MPAA_Rating', 'Major_Genre', 'Creative_Type']
+)
+```
+
+
+```{python}
+categorical_filtered = ['MPAA_Rating', 'Major_Genre', 'Creative_Type']
+
+alt.Chart(movies_cleaned).mark_circle().encode(
+    alt.X(alt.repeat('column'),type='nominal',sort='-size'),
+    alt.Y(alt.repeat('row'),type='nominal',sort='size'),
+    alt.Color('count()'),
+    alt.Size('count()')
+).properties(
+    width=200,
+    height=200
+).repeat(
+    column=categorical_filtered,
+    row=categorical_filtered
+).resolve_scale(
+    color='independent',
+    size='independent'
+)
+```
+
+
+```{python}
+alt.Chart(movies_cleaned).mark_boxplot().encode(
+    alt.X('Running_Time_min'),
+    alt.Y(alt.repeat('row'), type='nominal'),
+    tooltip=[
+        'Title:N'
+    ]
+).properties(
+    width=100,
+    height=100
+).facet(
+    column='MPAA_Rating'
+).repeat(
+    row=categorical_filtered
+)
 ```

@@ -1,5 +1,103 @@
 [
   {
+    "objectID": "geo.html",
+    "href": "geo.html",
+    "title": "Datos Geográficos",
+    "section": "",
+    "text": "Code\nimport pandas as pd\nimport geopandas as gpd\nimport altair as alt\nfrom vega_datasets import data\nCode\nurl = \"https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_0_countries.zip\"\n\ngdf_ne = gpd.read_file(url)\ngdf_ne = gdf_ne[[\"NAME\",\"CONTINENT\",\"POP_EST\",\"geometry\"]]\ngdf_ne\n\n\n\n\n\n\n\n\n\nNAME\nCONTINENT\nPOP_EST\ngeometry\n\n\n\n\n0\nFiji\nOceania\n889953.0\nMULTIPOLYGON (((180 -16.06713, 180 -16.55522, ...\n\n\n1\nTanzania\nAfrica\n58005463.0\nPOLYGON ((33.90371 -0.95, 34.07262 -1.05982, 3...\n\n\n2\nW. Sahara\nAfrica\n603253.0\nPOLYGON ((-8.66559 27.65643, -8.66512 27.58948...\n\n\n3\nCanada\nNorth America\n37589262.0\nMULTIPOLYGON (((-122.84 49, -122.97421 49.0025...\n\n\n4\nUnited States of America\nNorth America\n328239523.0\nMULTIPOLYGON (((-122.84 49, -120 49, -117.0312...\n\n\n...\n...\n...\n...\n...\n\n\n172\nSerbia\nEurope\n6944975.0\nPOLYGON ((18.82982 45.90887, 18.82984 45.90888...\n\n\n173\nMontenegro\nEurope\n622137.0\nPOLYGON ((20.0707 42.58863, 19.80161 42.50009,...\n\n\n174\nKosovo\nEurope\n1794248.0\nPOLYGON ((20.59025 41.85541, 20.52295 42.21787...\n\n\n175\nTrinidad and Tobago\nNorth America\n1394973.0\nPOLYGON ((-61.68 10.76, -61.105 10.89, -60.895...\n\n\n176\nS. Sudan\nAfrica\n11062113.0\nPOLYGON ((30.83385 3.50917, 29.9535 4.1737, 29...\n\n\n\n\n177 rows × 4 columns\nCode\nalt.Chart(gdf_ne).mark_geoshape()\nCode\ngdf_sel = gdf_ne.query(\"CONTINENT == 'South America'\")\n\nalt.Chart(gdf_sel).mark_geoshape(\n    fill='lightgray',\n    stroke='gray',\n    strokeWidth=0.5\n)"
+  },
+  {
+    "objectID": "geo.html#mapa-de-puntos",
+    "href": "geo.html#mapa-de-puntos",
+    "title": "Datos Geográficos",
+    "section": "Mapa de puntos",
+    "text": "Mapa de puntos\n\n\nCode\nbasemap = alt.Chart(gdf_sel).mark_geoshape(\n    fill='lightgray',\n    stroke='gray',\n    strokeWidth=0.5\n)\n\nbubbles = alt.Chart(gdf_sel).transform_calculate(\n    centroid=alt.expr.geoCentroid(None,alt.datum)\n).mark_circle(\n    stroke='black',\n    strokeWidth=0.5\n).encode(\n    longitude='centroid[0]:Q',\n    latitude='centroid[1]:Q',\n    size='POP_EST',\n    tooltip=[\n        'NAME',\n        alt.Tooltip('POP_EST',format='.2s')\n    ]\n)\n\nbasemap + bubbles"
+  },
+  {
+    "objectID": "geo.html#mapa-coroplético",
+    "href": "geo.html#mapa-coroplético",
+    "title": "Datos Geográficos",
+    "section": "Mapa Coroplético",
+    "text": "Mapa Coroplético\n\n\nCode\nalt.Chart(gdf_sel).mark_geoshape().encode(\n    alt.Color('POP_EST'),\n    tooltip=[\n        'NAME',\n        alt.Tooltip('POP_EST',format='.2s')\n    ]\n)\n\n\n\n\n\n\n\n\n\n\nCode\n# gdf_us_counties = gpd.read_file(data.us_10m.url,driver='TopoJSON', layer='counties')\n\ngdf_us_counties = alt.topo_feature(data.us_10m.url,'counties')\n# gdf_us_counties\n\ndf_us_unemp = data.unemployment()\ndf_us_unemp\n\n\n\n\n\n\n\n\n\nid\nrate\n\n\n\n\n0\n1001\n0.097\n\n\n1\n1003\n0.091\n\n\n2\n1005\n0.134\n\n\n3\n1007\n0.121\n\n\n4\n1009\n0.099\n\n\n...\n...\n...\n\n\n3213\n72145\n0.176\n\n\n3214\n72147\n0.277\n\n\n3215\n72149\n0.198\n\n\n3216\n72151\n0.241\n\n\n3217\n72153\n0.160\n\n\n\n\n3218 rows × 2 columns"
+  },
+  {
+    "objectID": "eda.html",
+    "href": "eda.html",
+    "title": "Exploratory Data Analysis",
+    "section": "",
+    "text": "Code\nimport pandas as pd\nimport altair as alt\nfrom vega_datasets import data\nCode\nmovies_extended = data.movies()\nmovies_extended.info()\n\n\n&lt;class 'pandas.DataFrame'&gt;\nRangeIndex: 3201 entries, 0 to 3200\nData columns (total 16 columns):\n #   Column                  Non-Null Count  Dtype  \n---  ------                  --------------  -----  \n 0   Title                   3200 non-null   object \n 1   US_Gross                3194 non-null   float64\n 2   Worldwide_Gross         3194 non-null   float64\n 3   US_DVD_Sales            564 non-null    float64\n 4   Production_Budget       3200 non-null   float64\n 5   Release_Date            3201 non-null   str    \n 6   MPAA_Rating             2596 non-null   str    \n 7   Running_Time_min        1209 non-null   float64\n 8   Distributor             2969 non-null   str    \n 9   Source                  2836 non-null   str    \n 10  Major_Genre             2926 non-null   str    \n 11  Creative_Type           2755 non-null   str    \n 12  Director                1870 non-null   str    \n 13  Rotten_Tomatoes_Rating  2321 non-null   float64\n 14  IMDB_Rating             2988 non-null   float64\n 15  IMDB_Votes              2988 non-null   float64\ndtypes: float64(8), object(1), str(7)\nmemory usage: 400.3+ KB"
+  },
+  {
+    "objectID": "eda.html#distribución-de-todas-las-columnas-númericas",
+    "href": "eda.html#distribución-de-todas-las-columnas-númericas",
+    "title": "Exploratory Data Analysis",
+    "section": "Distribución de todas las columnas númericas",
+    "text": "Distribución de todas las columnas númericas\n\n\nCode\nnumerical_columns = movies_cleaned.select_dtypes('number').columns.tolist()\n#[ 'US_Gross', 'Worldwide_Gross', 'Production_Budget', 'Running_Time_min','Rotten_Tomatoes_Rating','IMDB_Rating','IMDB_Votes']\n\nalt.Chart(movies_cleaned).mark_bar().encode(\n    alt.X(alt.repeat(),type='quantitative',bin=alt.Bin(maxbins=30)),\n    alt.Y('count()')\n).properties(\n    width=150,\n    height=150\n).repeat(\n    numerical_columns,\n    columns=4\n)\n\n\n\n\n\n\n\n\n\n\nCode\nnumerical_filtered = ['IMDB_Rating', 'Rotten_Tomatoes_Rating', 'US_Gross', 'Production_Budget']\n\nalt.Chart(movies_cleaned).mark_point().encode(\n    alt.X(alt.repeat('column'), type='quantitative'),\n    alt.Y(alt.repeat('row'), type='quantitative')\n).properties(\n    width=100,\n    height=100\n).repeat(\n    column=numerical_filtered,\n    row=numerical_filtered\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_cleaned).mark_rect().encode(\n    alt.X(alt.repeat('column'), type='quantitative', bin=alt.Bin(maxbins=30)),\n    alt.Y(alt.repeat('row'), type='quantitative', bin=alt.Bin(maxbins=30)),\n    alt.Color('count()')\n).properties(\n    width=100,\n    height=100\n).repeat(\n    column=numerical_filtered,\n    row=numerical_filtered\n).resolve_scale(\n    color='independent'\n)"
+  },
+  {
+    "objectID": "eda.html#correlación-de-pearson",
+    "href": "eda.html#correlación-de-pearson",
+    "title": "Exploratory Data Analysis",
+    "section": "Correlación de Pearson",
+    "text": "Correlación de Pearson\n\n\nCode\ncorr_matrix = movies_cleaned[numerical_columns].corr(method='pearson')\ncorr_matrix\n\n\n\n\n\n\n\n\n\nUS_Gross\nWorldwide_Gross\nProduction_Budget\nRunning_Time_min\nRotten_Tomatoes_Rating\nIMDB_Rating\nIMDB_Votes\n\n\n\n\nUS_Gross\n1.000000\n0.939742\n0.623566\n0.261973\n0.179158\n0.197037\n0.552514\n\n\nWorldwide_Gross\n0.939742\n1.000000\n0.665780\n0.317640\n0.159326\n0.197521\n0.551564\n\n\nProduction_Budget\n0.623566\n0.665780\n1.000000\n0.348830\n-0.088740\n0.015312\n0.339755\n\n\nRunning_Time_min\n0.261973\n0.317640\n0.348830\n1.000000\n0.295653\n0.387499\n0.404181\n\n\nRotten_Tomatoes_Rating\n0.179158\n0.159326\n-0.088740\n0.295653\n1.000000\n0.743118\n0.335410\n\n\nIMDB_Rating\n0.197037\n0.197521\n0.015312\n0.387499\n0.743118\n1.000000\n0.467389\n\n\nIMDB_Votes\n0.552514\n0.551564\n0.339755\n0.404181\n0.335410\n0.467389\n1.000000\n\n\n\n\n\n\n\n\n\nCode\ncorr_df = corr_matrix.reset_index().melt(id_vars='index')\ncorr_df.columns = ['Variable1', 'Variable2', 'Correlacion']\ncorr_df\n\n\n\n\n\n\n\n\n\nVariable1\nVariable2\nCorrelacion\n\n\n\n\n0\nUS_Gross\nUS_Gross\n1.000000\n\n\n1\nWorldwide_Gross\nUS_Gross\n0.939742\n\n\n2\nProduction_Budget\nUS_Gross\n0.623566\n\n\n3\nRunning_Time_min\nUS_Gross\n0.261973\n\n\n4\nRotten_Tomatoes_Rating\nUS_Gross\n0.179158\n\n\n5\nIMDB_Rating\nUS_Gross\n0.197037\n\n\n6\nIMDB_Votes\nUS_Gross\n0.552514\n\n\n7\nUS_Gross\nWorldwide_Gross\n0.939742\n\n\n8\nWorldwide_Gross\nWorldwide_Gross\n1.000000\n\n\n9\nProduction_Budget\nWorldwide_Gross\n0.665780\n\n\n10\nRunning_Time_min\nWorldwide_Gross\n0.317640\n\n\n11\nRotten_Tomatoes_Rating\nWorldwide_Gross\n0.159326\n\n\n12\nIMDB_Rating\nWorldwide_Gross\n0.197521\n\n\n13\nIMDB_Votes\nWorldwide_Gross\n0.551564\n\n\n14\nUS_Gross\nProduction_Budget\n0.623566\n\n\n15\nWorldwide_Gross\nProduction_Budget\n0.665780\n\n\n16\nProduction_Budget\nProduction_Budget\n1.000000\n\n\n17\nRunning_Time_min\nProduction_Budget\n0.348830\n\n\n18\nRotten_Tomatoes_Rating\nProduction_Budget\n-0.088740\n\n\n19\nIMDB_Rating\nProduction_Budget\n0.015312\n\n\n20\nIMDB_Votes\nProduction_Budget\n0.339755\n\n\n21\nUS_Gross\nRunning_Time_min\n0.261973\n\n\n22\nWorldwide_Gross\nRunning_Time_min\n0.317640\n\n\n23\nProduction_Budget\nRunning_Time_min\n0.348830\n\n\n24\nRunning_Time_min\nRunning_Time_min\n1.000000\n\n\n25\nRotten_Tomatoes_Rating\nRunning_Time_min\n0.295653\n\n\n26\nIMDB_Rating\nRunning_Time_min\n0.387499\n\n\n27\nIMDB_Votes\nRunning_Time_min\n0.404181\n\n\n28\nUS_Gross\nRotten_Tomatoes_Rating\n0.179158\n\n\n29\nWorldwide_Gross\nRotten_Tomatoes_Rating\n0.159326\n\n\n30\nProduction_Budget\nRotten_Tomatoes_Rating\n-0.088740\n\n\n31\nRunning_Time_min\nRotten_Tomatoes_Rating\n0.295653\n\n\n32\nRotten_Tomatoes_Rating\nRotten_Tomatoes_Rating\n1.000000\n\n\n33\nIMDB_Rating\nRotten_Tomatoes_Rating\n0.743118\n\n\n34\nIMDB_Votes\nRotten_Tomatoes_Rating\n0.335410\n\n\n35\nUS_Gross\nIMDB_Rating\n0.197037\n\n\n36\nWorldwide_Gross\nIMDB_Rating\n0.197521\n\n\n37\nProduction_Budget\nIMDB_Rating\n0.015312\n\n\n38\nRunning_Time_min\nIMDB_Rating\n0.387499\n\n\n39\nRotten_Tomatoes_Rating\nIMDB_Rating\n0.743118\n\n\n40\nIMDB_Rating\nIMDB_Rating\n1.000000\n\n\n41\nIMDB_Votes\nIMDB_Rating\n0.467389\n\n\n42\nUS_Gross\nIMDB_Votes\n0.552514\n\n\n43\nWorldwide_Gross\nIMDB_Votes\n0.551564\n\n\n44\nProduction_Budget\nIMDB_Votes\n0.339755\n\n\n45\nRunning_Time_min\nIMDB_Votes\n0.404181\n\n\n46\nRotten_Tomatoes_Rating\nIMDB_Votes\n0.335410\n\n\n47\nIMDB_Rating\nIMDB_Votes\n0.467389\n\n\n48\nIMDB_Votes\nIMDB_Votes\n1.000000\n\n\n\n\n\n\n\n\n\nCode\ncorr_df = corr_df[corr_df['Variable1'] &lt;= corr_df['Variable2']]\n\nheatmap_corr = alt.Chart(corr_df).mark_rect().encode(\n    alt.X('Variable1'),\n    alt.Y('Variable2'),\n    alt.Color('Correlacion', scale=alt.Scale(domain=[-1,1],scheme='redblue'))\n).properties(\n    width=300,\n    height=300\n)\n\ntext_corr = heatmap_corr.mark_text().encode(\n    alt.Text('Correlacion', format='.2f'),\n    color=alt.condition(\n        'abs(datum.Correlacion) &gt; 0.5',\n        alt.value('white'),\n        alt.value('black')\n    )\n)\n\n(heatmap_corr + text_corr).configure_view(\n    strokeWidth=0\n)"
+  },
+  {
+    "objectID": "eda.html#variables-categóricas",
+    "href": "eda.html#variables-categóricas",
+    "title": "Exploratory Data Analysis",
+    "section": "Variables categóricas",
+    "text": "Variables categóricas\n\n\nCode\nmovies_cleaned.describe(exclude='number')\n\n\n\n\n\n\n\n\n\nTitle\nRelease_Date\nMPAA_Rating\nDistributor\nSource\nMajor_Genre\nCreative_Type\nDirector\n\n\n\n\ncount\n3200\n3201\n2596\n2969\n2836\n2926\n2755\n1870\n\n\nunique\n3176\n1600\n7\n174\n18\n12\n9\n550\n\n\ntop\n20,000 Leagues Under the Sea\nOct 11 2002\nR\nWarner Bros.\nOriginal Screenplay\nDrama\nContemporary Fiction\nSteven Spielberg\n\n\nfreq\n2\n9\n1194\n318\n1536\n789\n1453\n23\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_cleaned).mark_bar().encode(\n    alt.X('count()'),\n    alt.Y(alt.repeat(), type='nominal',sort='-x')\n).properties(\n    width=150,\n    height=150\n).repeat(\n    ['MPAA_Rating', 'Major_Genre', 'Creative_Type']\n)\n\n\n\n\n\n\n\n\n\n\nCode\ncategorical_filtered = ['MPAA_Rating', 'Major_Genre', 'Creative_Type']\n\nalt.Chart(movies_cleaned).mark_circle().encode(\n    alt.X(alt.repeat('column'),type='nominal',sort='-size'),\n    alt.Y(alt.repeat('row'),type='nominal',sort='size'),\n    alt.Color('count()'),\n    alt.Size('count()')\n).properties(\n    width=200,\n    height=200\n).repeat(\n    column=categorical_filtered,\n    row=categorical_filtered\n).resolve_scale(\n    color='independent',\n    size='independent'\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_cleaned).mark_boxplot().encode(\n    alt.X('Running_Time_min'),\n    alt.Y(alt.repeat('row'), type='nominal'),\n    tooltip=[\n        'Title:N'\n    ]\n).properties(\n    width=100,\n    height=100\n).facet(\n    column='MPAA_Rating'\n).repeat(\n    row=categorical_filtered\n)"
+  },
+  {
+    "objectID": "visualizing_distributions.html",
+    "href": "visualizing_distributions.html",
+    "title": "Visualizando Distribuciones",
+    "section": "",
+    "text": "Code\nimport altair as alt\nimport pandas as pd\nfrom vega_datasets import data"
+  },
+  {
+    "objectID": "visualizing_distributions.html#rugplot",
+    "href": "visualizing_distributions.html#rugplot",
+    "title": "Visualizando Distribuciones",
+    "section": "Rugplot",
+    "text": "Rugplot\n\n\nCode\nalt.Chart(movies).mark_tick().encode(\n    alt.X('runtime')\n)"
+  },
+  {
+    "objectID": "visualizing_distributions.html#histograma",
+    "href": "visualizing_distributions.html#histograma",
+    "title": "Visualizando Distribuciones",
+    "section": "Histograma",
+    "text": "Histograma\n\n\nCode\nalt.Chart(movies).mark_bar().encode(\n    alt.X('runtime', bin=alt.Bin(step=10)),\n    alt.Y('count()')\n)"
+  },
+  {
+    "objectID": "visualizing_distributions.html#gráfico-de-densidad-o-kde",
+    "href": "visualizing_distributions.html#gráfico-de-densidad-o-kde",
+    "title": "Visualizando Distribuciones",
+    "section": "Gráfico de densidad o KDE",
+    "text": "Gráfico de densidad o KDE\n\n\nCode\nalt.Chart(movies).transform_density(\n    'runtime',\n    as_ = ['runtime','density']\n).mark_area().encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q')\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies).transform_density(\n    'runtime',\n    groupby=['genre'],\n    as_ = ['runtime','density'],\n    steps=100\n).mark_area(opacity=0.5).encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q', stack=None),\n    alt.Color('genre')\n)\n\n\n\n\n\n\n\n\n\n\nCode\ndensity = alt.Chart(movies[:10]).transform_density(\n    'runtime',\n    as_ = ['runtime','density']\n).mark_area(opacity=0.5).encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q', stack=None)\n)\n\n\ntick = alt.Chart(movies[:10]).mark_tick(\n    color='black',\n    yOffset=140\n).encode(\n    alt.X('runtime')\n)\n\ndensity + tick"
+  },
+  {
+    "objectID": "visualizing_distributions.html#boxplot---caja-y-bigotes",
+    "href": "visualizing_distributions.html#boxplot---caja-y-bigotes",
+    "title": "Visualizando Distribuciones",
+    "section": "Boxplot - caja y bigotes",
+    "text": "Boxplot - caja y bigotes\n\n\nCode\nbar = alt.Chart(movies_extended).mark_bar().encode(\n    alt.X('mean(Worldwide_Gross)'),\n    alt.Y('Major_Genre')\n)\n\nblox = alt.Chart(movies_extended).mark_boxplot().encode(\n    alt.X('Worldwide_Gross'),\n    alt.Y('Major_Genre'),\n    alt.Size('count()')\n)\n\nblox | bar"
+  },
+  {
+    "objectID": "visualizing_distributions.html#heatmap",
+    "href": "visualizing_distributions.html#heatmap",
+    "title": "Visualizando Distribuciones",
+    "section": "Heatmap",
+    "text": "Heatmap\n\n\nCode\nalt.Chart(movies_extended).mark_rect().encode(\n    alt.X('IMDB_Rating', bin=alt.Bin(maxbins=60)),\n    alt.Y('Rotten_Tomatoes_Rating', bin=alt.Bin(maxbins=60)),\n    alt.Color('count()')\n)"
+  },
+  {
+    "objectID": "visualizing_distributions.html#facetas",
+    "href": "visualizing_distributions.html#facetas",
+    "title": "Visualizando Distribuciones",
+    "section": "Facetas",
+    "text": "Facetas\n\n\nCode\nalt.Chart(movies_extended).mark_bar().encode(\n    alt.X('count()'),\n    alt.Y('MPAA_Rating'),\n    alt.Color('MPAA_Rating'),\n    tooltip=[\n        'count()'\n    ]\n).properties(\n    width=90,\n    height=70\n).facet(\n    'Major_Genre',\n    columns=4,\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_extended).mark_bar().encode(\n    alt.X('count()'),\n    alt.Y('Major_Genre'),\n    alt.Color('Major_Genre'),\n    tooltip=[\n        'count()'\n    ]\n).properties(\n    width=100,\n    height=130\n).facet(\n    'MPAA_Rating',\n    columns=4,\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_extended).mark_rect().encode(\n    alt.X('MPAA_Rating'),\n    alt.Y('Major_Genre', sort='color'),\n    alt.Color('count()'),\n    tooltip=['count()']\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_extended).mark_circle().encode(\n    alt.X('MPAA_Rating'),\n    alt.Y('Major_Genre', sort='color'),\n    alt.Color('count()'),\n    alt.Size('count()'),\n    tooltip=['count()']\n)"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Visualización Hola Mundo",
@@ -11,7 +109,7 @@
     "href": "index.html#tooltip",
     "title": "Visualización Hola Mundo",
     "section": "Tooltip",
-    "text": "Tooltip\n\n\nCode\ncars = data.cars()\ncars['URL'] = \"https://google.com/search?q=\"+cars['Name']\ncars.head()\n\n#paso1\nbrush = alt.selection_interval(resolve='intersect')\n#paso3\ncondition = alt.condition(\n    brush,\n    'Origin',\n    alt.value('lightgray')\n)\n\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.3)\n)\n\nautos = alt.Chart(cars).mark_circle().encode(\n    alt.X(\"Horsepower\"),\n    alt.Y(\"Miles_per_Gallon\"),\n    color = condition,\n    # opacity = opacity_condition,\n    href='URL',\n    tooltip=[\n        alt.Tooltip('Name',title='Nombre: ')\n    ]\n).add_params(brush) #paso2\n\n# autos.save(\"autos.html\")\n\nautos_link = autos.encode(\n    alt.X('Acceleration'),\n    alt.Y('Weight_in_lbs')\n)\n\n\nautos | autos_link\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_79820/1909135793.py:39: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  autos | autos_link"
+    "text": "Tooltip\n\n\nCode\ncars = data.cars()\ncars['URL'] = \"https://google.com/search?q=\"+cars['Name']\ncars.head()\n\n#paso1\nbrush = alt.selection_interval(resolve='intersect')\n#paso3\ncondition = alt.condition(\n    brush,\n    'Origin',\n    alt.value('lightgray')\n)\n\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.3)\n)\n\nautos = alt.Chart(cars).mark_circle().encode(\n    alt.X(\"Horsepower\"),\n    alt.Y(\"Miles_per_Gallon\"),\n    color = condition,\n    # opacity = opacity_condition,\n    href='URL',\n    tooltip=[\n        alt.Tooltip('Name',title='Nombre: ')\n    ]\n).add_params(brush) #paso2\n\n# autos.save(\"autos.html\")\n\nautos_link = autos.encode(\n    alt.X('Acceleration'),\n    alt.Y('Weight_in_lbs')\n)\n\n\nautos | autos_link\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_62384/1909135793.py:39: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  autos | autos_link"
   },
   {
     "objectID": "index.html#bind-legend",
@@ -46,7 +144,7 @@
     "href": "index.html#overview-details",
     "title": "Visualización Hola Mundo",
     "section": "Overview + details",
-    "text": "Overview + details\n\n\nCode\nbrush = alt.selection_interval()\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.2)\n)\n\nbars_slider = alt.Chart(movies).mark_bar().encode(\n    alt.X('Release_Date'),\n    alt.Y('count()'),\n    opacity = opacity_condition\n).properties(\n    height = 50\n).add_params(brush)\n\n\npoints = alt.Chart(movies).mark_circle().encode(\n    alt.X('Rotten_Tomatoes_Rating'),\n    alt.Y('IMDB_Rating'),\n    alt.Color('Major_Genre'),\n    opacity=opacity_condition,\n    tooltip=['Title','Rotten_Tomatoes_Rating','IMDB_Rating','Major_Genre','Release_Date']\n).add_params(brush)\n\n\npoints & bars_slider\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_79820/4091028901.py:26: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  points & bars_slider"
+    "text": "Overview + details\n\n\nCode\nbrush = alt.selection_interval()\nopacity_condition = alt.condition(\n    brush,\n    alt.value(1),\n    alt.value(0.2)\n)\n\nbars_slider = alt.Chart(movies).mark_bar().encode(\n    alt.X('Release_Date'),\n    alt.Y('count()'),\n    opacity = opacity_condition\n).properties(\n    height = 50\n).add_params(brush)\n\n\npoints = alt.Chart(movies).mark_circle().encode(\n    alt.X('Rotten_Tomatoes_Rating'),\n    alt.Y('IMDB_Rating'),\n    alt.Color('Major_Genre'),\n    opacity=opacity_condition,\n    tooltip=['Title','Rotten_Tomatoes_Rating','IMDB_Rating','Major_Genre','Release_Date']\n).add_params(brush)\n\n\npoints & bars_slider\n\n\n/var/folders/p8/tdnhgpds2mq070npwb96q3ym0000gn/T/ipykernel_62384/4091028901.py:26: UserWarning: Automatically deduplicated selection parameter with identical configuration. If you want independent parameters, explicitly name them differently (e.g., name='param1', name='param2'). See https://github.com/vega/altair/issues/3891\n  points & bars_slider"
   },
   {
     "objectID": "index.html#minimap---release-date",
@@ -117,75 +215,5 @@
     "title": "Visualización Hola Mundo",
     "section": "Temporal heatmap",
     "text": "Temporal heatmap\n\n\nCode\nalt.Chart(movies_cleaned).mark_rect().encode(\n    alt.X('date(Release_Date):O'),\n    alt.Y('month(Release_Date):O'),\n    alt.Color('sum(US_Gross)'),\n    tooltip=['sum(US_Gross)']\n)"
-  },
-  {
-    "objectID": "visualizing_distributions.html",
-    "href": "visualizing_distributions.html",
-    "title": "Visualizando Distribuciones",
-    "section": "",
-    "text": "Code\nimport altair as alt\nimport pandas as pd\nfrom vega_datasets import data"
-  },
-  {
-    "objectID": "visualizing_distributions.html#rugplot",
-    "href": "visualizing_distributions.html#rugplot",
-    "title": "Visualizando Distribuciones",
-    "section": "Rugplot",
-    "text": "Rugplot\n\n\nCode\nalt.Chart(movies).mark_tick().encode(\n    alt.X('runtime')\n)"
-  },
-  {
-    "objectID": "visualizing_distributions.html#histograma",
-    "href": "visualizing_distributions.html#histograma",
-    "title": "Visualizando Distribuciones",
-    "section": "Histograma",
-    "text": "Histograma\n\n\nCode\nalt.Chart(movies).mark_bar().encode(\n    alt.X('runtime', bin=alt.Bin(step=10)),\n    alt.Y('count()')\n)"
-  },
-  {
-    "objectID": "visualizing_distributions.html#gráfico-de-densidad-o-kde",
-    "href": "visualizing_distributions.html#gráfico-de-densidad-o-kde",
-    "title": "Visualizando Distribuciones",
-    "section": "Gráfico de densidad o KDE",
-    "text": "Gráfico de densidad o KDE\n\n\nCode\nalt.Chart(movies).transform_density(\n    'runtime',\n    as_ = ['runtime','density']\n).mark_area().encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q')\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies).transform_density(\n    'runtime',\n    groupby=['genre'],\n    as_ = ['runtime','density'],\n    steps=100\n).mark_area(opacity=0.5).encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q', stack=None),\n    alt.Color('genre')\n)\n\n\n\n\n\n\n\n\n\n\nCode\ndensity = alt.Chart(movies[:10]).transform_density(\n    'runtime',\n    as_ = ['runtime','density']\n).mark_area(opacity=0.5).encode(\n    alt.X('runtime:Q'),\n    alt.Y('density:Q', stack=None)\n)\n\n\ntick = alt.Chart(movies[:10]).mark_tick(\n    color='black',\n    yOffset=140\n).encode(\n    alt.X('runtime')\n)\n\ndensity + tick"
-  },
-  {
-    "objectID": "visualizing_distributions.html#boxplot---caja-y-bigotes",
-    "href": "visualizing_distributions.html#boxplot---caja-y-bigotes",
-    "title": "Visualizando Distribuciones",
-    "section": "Boxplot - caja y bigotes",
-    "text": "Boxplot - caja y bigotes\n\n\nCode\nbar = alt.Chart(movies_extended).mark_bar().encode(\n    alt.X('mean(Worldwide_Gross)'),\n    alt.Y('Major_Genre')\n)\n\nblox = alt.Chart(movies_extended).mark_boxplot().encode(\n    alt.X('Worldwide_Gross'),\n    alt.Y('Major_Genre'),\n    alt.Size('count()')\n)\n\nblox | bar"
-  },
-  {
-    "objectID": "visualizing_distributions.html#heatmap",
-    "href": "visualizing_distributions.html#heatmap",
-    "title": "Visualizando Distribuciones",
-    "section": "Heatmap",
-    "text": "Heatmap\n\n\nCode\nalt.Chart(movies_extended).mark_rect().encode(\n    alt.X('IMDB_Rating', bin=alt.Bin(maxbins=60)),\n    alt.Y('Rotten_Tomatoes_Rating', bin=alt.Bin(maxbins=60)),\n    alt.Color('count()')\n)"
-  },
-  {
-    "objectID": "visualizing_distributions.html#facetas",
-    "href": "visualizing_distributions.html#facetas",
-    "title": "Visualizando Distribuciones",
-    "section": "Facetas",
-    "text": "Facetas\n\n\nCode\nalt.Chart(movies_extended).mark_bar().encode(\n    alt.X('count()'),\n    alt.Y('MPAA_Rating'),\n    alt.Color('MPAA_Rating'),\n    tooltip=[\n        'count()'\n    ]\n).properties(\n    width=90,\n    height=70\n).facet(\n    'Major_Genre',\n    columns=4,\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_extended).mark_bar().encode(\n    alt.X('count()'),\n    alt.Y('Major_Genre'),\n    alt.Color('Major_Genre'),\n    tooltip=[\n        'count()'\n    ]\n).properties(\n    width=100,\n    height=130\n).facet(\n    'MPAA_Rating',\n    columns=4,\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_extended).mark_rect().encode(\n    alt.X('MPAA_Rating'),\n    alt.Y('Major_Genre', sort='color'),\n    alt.Color('count()'),\n    tooltip=['count()']\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_extended).mark_circle().encode(\n    alt.X('MPAA_Rating'),\n    alt.Y('Major_Genre', sort='color'),\n    alt.Color('count()'),\n    alt.Size('count()'),\n    tooltip=['count()']\n)"
-  },
-  {
-    "objectID": "eda.html",
-    "href": "eda.html",
-    "title": "Exploratory Analysis Data",
-    "section": "",
-    "text": "Code\nimport pandas as pd\nimport altair as alt\nfrom vega_datasets import data\nCode\nmovies_extended = data.movies()\nmovies_extended.info()\n\n\n&lt;class 'pandas.DataFrame'&gt;\nRangeIndex: 3201 entries, 0 to 3200\nData columns (total 16 columns):\n #   Column                  Non-Null Count  Dtype  \n---  ------                  --------------  -----  \n 0   Title                   3200 non-null   object \n 1   US_Gross                3194 non-null   float64\n 2   Worldwide_Gross         3194 non-null   float64\n 3   US_DVD_Sales            564 non-null    float64\n 4   Production_Budget       3200 non-null   float64\n 5   Release_Date            3201 non-null   str    \n 6   MPAA_Rating             2596 non-null   str    \n 7   Running_Time_min        1209 non-null   float64\n 8   Distributor             2969 non-null   str    \n 9   Source                  2836 non-null   str    \n 10  Major_Genre             2926 non-null   str    \n 11  Creative_Type           2755 non-null   str    \n 12  Director                1870 non-null   str    \n 13  Rotten_Tomatoes_Rating  2321 non-null   float64\n 14  IMDB_Rating             2988 non-null   float64\n 15  IMDB_Votes              2988 non-null   float64\ndtypes: float64(8), object(1), str(7)\nmemory usage: 400.3+ KB"
-  },
-  {
-    "objectID": "eda.html#distribución-de-todas-las-columnas-númericas",
-    "href": "eda.html#distribución-de-todas-las-columnas-númericas",
-    "title": "Exploratory Analysis Data",
-    "section": "Distribución de todas las columnas númericas",
-    "text": "Distribución de todas las columnas númericas\n\n\nCode\nnumerical_columns = movies_cleaned.select_dtypes('number').columns.tolist()\n#[ 'US_Gross', 'Worldwide_Gross', 'Production_Budget', 'Running_Time_min','Rotten_Tomatoes_Rating','IMDB_Rating','IMDB_Votes']\n\nalt.Chart(movies_cleaned).mark_bar().encode(\n    alt.X(alt.repeat(),type='quantitative',bin=alt.Bin(maxbins=30)),\n    alt.Y('count()')\n).properties(\n    width=150,\n    height=150\n).repeat(\n    numerical_columns,\n    columns=4\n)\n\n\n\n\n\n\n\n\n\n\nCode\nnumerical_filtered = ['IMDB_Rating', 'Rotten_Tomatoes_Rating', 'US_Gross', 'Production_Budget']\n\nalt.Chart(movies_cleaned).mark_point().encode(\n    alt.X(alt.repeat('column'), type='quantitative'),\n    alt.Y(alt.repeat('row'), type='quantitative')\n).properties(\n    width=100,\n    height=100\n).repeat(\n    column=numerical_filtered,\n    row=numerical_filtered\n)\n\n\n\n\n\n\n\n\n\n\nCode\nalt.Chart(movies_cleaned).mark_rect().encode(\n    alt.X(alt.repeat('column'), type='quantitative', bin=alt.Bin(maxbins=30)),\n    alt.Y(alt.repeat('row'), type='quantitative', bin=alt.Bin(maxbins=30)),\n    alt.Color('count()')\n).properties(\n    width=100,\n    height=100\n).repeat(\n    column=numerical_filtered,\n    row=numerical_filtered\n).resolve_scale(\n    color='independent'\n)"
-  },
-  {
-    "objectID": "eda.html#correlación-de-pearson",
-    "href": "eda.html#correlación-de-pearson",
-    "title": "Exploratory Analysis Data",
-    "section": "Correlación de Pearson",
-    "text": "Correlación de Pearson\n\n\nCode\ncorr_matrix = movies_cleaned[numerical_columns].corr(method='pearson')\ncorr_matrix\n\n\n\n\n\n\n\n\n\nUS_Gross\nWorldwide_Gross\nProduction_Budget\nRunning_Time_min\nRotten_Tomatoes_Rating\nIMDB_Rating\nIMDB_Votes\n\n\n\n\nUS_Gross\n1.000000\n0.939742\n0.623566\n0.261973\n0.179158\n0.197037\n0.552514\n\n\nWorldwide_Gross\n0.939742\n1.000000\n0.665780\n0.317640\n0.159326\n0.197521\n0.551564\n\n\nProduction_Budget\n0.623566\n0.665780\n1.000000\n0.348830\n-0.088740\n0.015312\n0.339755\n\n\nRunning_Time_min\n0.261973\n0.317640\n0.348830\n1.000000\n0.295653\n0.387499\n0.404181\n\n\nRotten_Tomatoes_Rating\n0.179158\n0.159326\n-0.088740\n0.295653\n1.000000\n0.743118\n0.335410\n\n\nIMDB_Rating\n0.197037\n0.197521\n0.015312\n0.387499\n0.743118\n1.000000\n0.467389\n\n\nIMDB_Votes\n0.552514\n0.551564\n0.339755\n0.404181\n0.335410\n0.467389\n1.000000\n\n\n\n\n\n\n\n\n\nCode\ncorr_df = corr_matrix.reset_index().melt(id_vars='index')\ncorr_df.columns = ['Variable1', 'Variable2', 'Correlacion']\ncorr_df\n\n\n\n\n\n\n\n\n\nVariable1\nVariable2\nCorrelacion\n\n\n\n\n0\nUS_Gross\nUS_Gross\n1.000000\n\n\n1\nWorldwide_Gross\nUS_Gross\n0.939742\n\n\n2\nProduction_Budget\nUS_Gross\n0.623566\n\n\n3\nRunning_Time_min\nUS_Gross\n0.261973\n\n\n4\nRotten_Tomatoes_Rating\nUS_Gross\n0.179158\n\n\n5\nIMDB_Rating\nUS_Gross\n0.197037\n\n\n6\nIMDB_Votes\nUS_Gross\n0.552514\n\n\n7\nUS_Gross\nWorldwide_Gross\n0.939742\n\n\n8\nWorldwide_Gross\nWorldwide_Gross\n1.000000\n\n\n9\nProduction_Budget\nWorldwide_Gross\n0.665780\n\n\n10\nRunning_Time_min\nWorldwide_Gross\n0.317640\n\n\n11\nRotten_Tomatoes_Rating\nWorldwide_Gross\n0.159326\n\n\n12\nIMDB_Rating\nWorldwide_Gross\n0.197521\n\n\n13\nIMDB_Votes\nWorldwide_Gross\n0.551564\n\n\n14\nUS_Gross\nProduction_Budget\n0.623566\n\n\n15\nWorldwide_Gross\nProduction_Budget\n0.665780\n\n\n16\nProduction_Budget\nProduction_Budget\n1.000000\n\n\n17\nRunning_Time_min\nProduction_Budget\n0.348830\n\n\n18\nRotten_Tomatoes_Rating\nProduction_Budget\n-0.088740\n\n\n19\nIMDB_Rating\nProduction_Budget\n0.015312\n\n\n20\nIMDB_Votes\nProduction_Budget\n0.339755\n\n\n21\nUS_Gross\nRunning_Time_min\n0.261973\n\n\n22\nWorldwide_Gross\nRunning_Time_min\n0.317640\n\n\n23\nProduction_Budget\nRunning_Time_min\n0.348830\n\n\n24\nRunning_Time_min\nRunning_Time_min\n1.000000\n\n\n25\nRotten_Tomatoes_Rating\nRunning_Time_min\n0.295653\n\n\n26\nIMDB_Rating\nRunning_Time_min\n0.387499\n\n\n27\nIMDB_Votes\nRunning_Time_min\n0.404181\n\n\n28\nUS_Gross\nRotten_Tomatoes_Rating\n0.179158\n\n\n29\nWorldwide_Gross\nRotten_Tomatoes_Rating\n0.159326\n\n\n30\nProduction_Budget\nRotten_Tomatoes_Rating\n-0.088740\n\n\n31\nRunning_Time_min\nRotten_Tomatoes_Rating\n0.295653\n\n\n32\nRotten_Tomatoes_Rating\nRotten_Tomatoes_Rating\n1.000000\n\n\n33\nIMDB_Rating\nRotten_Tomatoes_Rating\n0.743118\n\n\n34\nIMDB_Votes\nRotten_Tomatoes_Rating\n0.335410\n\n\n35\nUS_Gross\nIMDB_Rating\n0.197037\n\n\n36\nWorldwide_Gross\nIMDB_Rating\n0.197521\n\n\n37\nProduction_Budget\nIMDB_Rating\n0.015312\n\n\n38\nRunning_Time_min\nIMDB_Rating\n0.387499\n\n\n39\nRotten_Tomatoes_Rating\nIMDB_Rating\n0.743118\n\n\n40\nIMDB_Rating\nIMDB_Rating\n1.000000\n\n\n41\nIMDB_Votes\nIMDB_Rating\n0.467389\n\n\n42\nUS_Gross\nIMDB_Votes\n0.552514\n\n\n43\nWorldwide_Gross\nIMDB_Votes\n0.551564\n\n\n44\nProduction_Budget\nIMDB_Votes\n0.339755\n\n\n45\nRunning_Time_min\nIMDB_Votes\n0.404181\n\n\n46\nRotten_Tomatoes_Rating\nIMDB_Votes\n0.335410\n\n\n47\nIMDB_Rating\nIMDB_Votes\n0.467389\n\n\n48\nIMDB_Votes\nIMDB_Votes\n1.000000\n\n\n\n\n\n\n\n\n\nCode\ncorr_df = corr_df[corr_df['Variable1'] &lt;= corr_df['Variable2']]\n\nheatmap_corr = alt.Chart(corr_df).mark_rect().encode(\n    alt.X('Variable1'),\n    alt.Y('Variable2'),\n    alt.Color('Correlacion', scale=alt.Scale(domain=[-1,1],scheme='redblue'))\n).properties(\n    width=300,\n    height=300\n)\n\ntext_corr = heatmap_corr.mark_text().encode(\n    alt.Text('Correlacion', format='.2f'),\n    color=alt.condition(\n        'abs(datum.Correlacion) &gt; 0.5',\n        alt.value('white'),\n        alt.value('black')\n    )\n)\n\n(heatmap_corr + text_corr).configure_view(\n    strokeWidth=0\n)"
   }
 ]
